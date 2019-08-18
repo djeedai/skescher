@@ -1,0 +1,7 @@
+﻿
+.vs
+
+*.csproj.user
+
+/skescher/obj
+/skescher/bin
