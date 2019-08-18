@@ -9,6 +9,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -23,11 +24,84 @@ using Windows.UI.Xaml.Navigation;
 
 namespace SketchPad2
 {
+
+    public enum FileFormat
+    {
+        Jpeg,
+        Png,
+        Bmp,
+        Tiff,
+        Gif
+    }
+
+    public static class FileFormatExtensions
+    {
+        public static string ToFileType(this FileFormat format)
+        {
+            switch (format)
+            {
+            case FileFormat.Jpeg:
+                return "jpeg";
+            case FileFormat.Png:
+                return "png";
+            case FileFormat.Bmp:
+                return  "bmp";
+            case FileFormat.Tiff:
+                return  "tiff";
+            case FileFormat.Gif:
+                return "gif";
+            }
+            throw new Exception();
+        }
+
+        public static Guid GetBitmapEncoder(this FileFormat format)
+        {
+            switch (format)
+            {
+            case FileFormat.Jpeg:
+                return BitmapEncoder.JpegEncoderId;
+            case FileFormat.Png:
+                return BitmapEncoder.PngEncoderId;
+            case FileFormat.Bmp:
+                return BitmapEncoder.BmpEncoderId;
+            case FileFormat.Tiff:
+                return BitmapEncoder.TiffEncoderId;
+            case FileFormat.Gif:
+                return BitmapEncoder.GifEncoderId;
+            }
+            throw new Exception();
+        }
+
+        public static FileFormat FromFileType(string fileType)
+        {
+            if (fileType.StartsWith('.'))
+            {
+                fileType = fileType.Substring(1);
+            }
+            switch (fileType)
+            {
+            case "jpeg":
+            case "jpg":
+                return FileFormat.Jpeg;
+            case "png":
+                return FileFormat.Png;
+            case "bmp":
+                return FileFormat.Bmp;
+            case "tiff":
+                return FileFormat.Tiff;
+            case "gif":
+                return FileFormat.Gif;
+            }
+            throw new ArgumentException($"Invalid file type {fileType}", "fileType");
+        }
+    }
+
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class MainPage : Page
     {
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -46,28 +120,23 @@ namespace SketchPad2
 
         }
 
-        private void pasteButton_Click(object sender, RoutedEventArgs e)
+        private async void pasteButton_Click(object sender, RoutedEventArgs e)
         {
-            var wb = GetSignatureBitmapFull(inkCanvas);
-            WriteableBitmapToStorageFile(wb, FileFormat.Png);
-
-            //Size size = new Size(surface.Width, surface.Height);
-            //RenderTargetBitmap renderBitmap = new RenderTargetBitmap();
-            //renderBitmap.RenderAsync(inkCanvas);
-
-
-            //(int)size.Width,
-            //(int)size.Height,
-            //96,
-            //96,
-            //PixelFormats.Default);
-            //renderBitmap.Render(surface);
-            //using (FileStream fs = File.Open(path, FileMode.Create))
-            //{
-            //    JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-            //    encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
-            //    encoder.Save(fs);
-            //}
+            var savePicker = new FileSavePicker();
+            savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            savePicker.FileTypeChoices.Add("JPEG image", new List<string>() { ".jpeg" });
+            savePicker.FileTypeChoices.Add("PNG image", new List<string>() { ".png" });
+            savePicker.FileTypeChoices.Add("BMP image", new List<string>() { ".bmp" });
+            savePicker.FileTypeChoices.Add("TIFF image", new List<string>() { ".tiff" });
+            savePicker.FileTypeChoices.Add("GIF image", new List<string>() { ".gif" });
+            savePicker.SuggestedFileName = "sketch";
+            StorageFile file = await savePicker.PickSaveFileAsync();
+            if (file != null)
+            {
+                var bitmap = GetSignatureBitmapFull(inkCanvas);
+                FileFormat format = FileFormatExtensions.FromFileType(file.FileType);
+                WriteableBitmapToStorageFile(bitmap, file, format);
+            }
         }
 
         private byte[] ConvertInkCanvasToByteArray(InkCanvas canvas)
@@ -116,64 +185,23 @@ namespace SketchPad2
             }
         }
 
-        private enum FileFormat
+        private async void WriteableBitmapToStorageFile(WriteableBitmap bitmap, StorageFile file, FileFormat fileFormat)
         {
-            Jpeg,
-            Png,
-            Bmp,
-            Tiff,
-            Gif
-        }
-
-        private async Task<StorageFile> WriteableBitmapToStorageFile(WriteableBitmap WB, FileFormat fileFormat)
-        {
-            string FileName = "MyFile.";
-            Guid BitmapEncoderGuid = BitmapEncoder.JpegEncoderId;
-            switch (fileFormat)
-            {
-            case FileFormat.Jpeg:
-                FileName += "jpeg";
-                BitmapEncoderGuid = BitmapEncoder.JpegEncoderId;
-                break;
-
-            case FileFormat.Png:
-                FileName += "png";
-                BitmapEncoderGuid = BitmapEncoder.PngEncoderId;
-                break;
-
-            case FileFormat.Bmp:
-                FileName += "bmp";
-                BitmapEncoderGuid = BitmapEncoder.BmpEncoderId;
-                break;
-
-            case FileFormat.Tiff:
-                FileName += "tiff";
-                BitmapEncoderGuid = BitmapEncoder.TiffEncoderId;
-                break;
-
-            case FileFormat.Gif:
-                FileName += "gif";
-                BitmapEncoderGuid = BitmapEncoder.GifEncoderId;
-                break;
-            }
-
-            var file = await ApplicationData.Current.TemporaryFolder.CreateFileAsync(FileName, CreationCollisionOption.GenerateUniqueName);
+            Guid BitmapEncoderGuid = fileFormat.GetBitmapEncoder();
             using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite))
             {
                 BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoderGuid, stream);
-                Stream pixelStream = WB.PixelBuffer.AsStream();
+                Stream pixelStream = bitmap.PixelBuffer.AsStream();
                 byte[] pixels = new byte[pixelStream.Length];
                 await pixelStream.ReadAsync(pixels, 0, pixels.Length);
-
                 encoder.SetPixelData(BitmapPixelFormat.Bgra8, BitmapAlphaMode.Ignore,
-                                    (uint)WB.PixelWidth,
-                                    (uint)WB.PixelHeight,
+                                    (uint)bitmap.PixelWidth,
+                                    (uint)bitmap.PixelHeight,
                                     96.0,
                                     96.0,
                                     pixels);
                 await encoder.FlushAsync();
             }
-            return file;
         }
 
     }
