@@ -120,7 +120,12 @@ namespace SketchPad2
 
         }
 
-        private async void pasteButton_Click(object sender, RoutedEventArgs e)
+        private void pasteButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async void saveButton_Click(object sender, RoutedEventArgs e)
         {
             var savePicker = new FileSavePicker();
             savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;

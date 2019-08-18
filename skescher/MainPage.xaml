@@ -20,8 +20,14 @@
                 </InkToolbarCustomToolButton>-->
             </InkToolbar>
             <AppBarSeparator />
-            <AppBarButton Icon="Like"/>
-            <Button x:Name="cutButton" 
+            <AppBarButton
+                x:Name="saveButton"
+                Style="{ThemeResource AppBarButtonRevealStyle}"
+                Icon="Save"
+                Width="40"
+                Height="40"
+                Click="saveButton_Click" />
+            <!--<Button x:Name="cutButton" 
                 Content="Cut" 
                 Click="cutButton_Click"
                 Width="100"
@@ -35,7 +41,7 @@
                 Content="Paste"  
                 Click="pasteButton_Click"
                 Width="100"
-                Margin="5,0,0,0"/>
+                Margin="5,0,0,0"/>-->
         </StackPanel>
 
     </Grid>
