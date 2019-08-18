@@ -7,8 +7,8 @@
     <ProjectGuid>{B97E658D-5A7F-4466-A593-3EA1CAE5F3AB}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SketchPad2</RootNamespace>
-    <AssemblyName>SketchPad2</AssemblyName>
+    <RootNamespace>skescher</RootNamespace>
+    <AssemblyName>skescher</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
