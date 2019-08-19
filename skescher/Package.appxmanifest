@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="a94f9b65-1100-457f-98bd-35fd27da4c73"
+    Name="Skescher"
     Publisher="CN=fr.djee"
-    Version="1.0.0.0" />
+    Version="0.1.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="a94f9b65-1100-457f-98bd-35fd27da4c73" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>SketchPad2</DisplayName>
-    <PublisherDisplayName>djee</PublisherDisplayName>
+    <DisplayName>Skescher</DisplayName>
+    <PublisherDisplayName>djee.fr</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -30,12 +30,12 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="SketchPad2.App">
+      EntryPoint="Skescher.App">
       <uap:VisualElements
-        DisplayName="SketchPad2"
+        DisplayName="Skescher"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="SketchPad2"
+        Description="Skescher sketching app for Windows 10"
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
@@ -45,5 +45,6 @@
 
   <Capabilities>
     <Capability Name="internetClient" />
+    <uap:Capability Name="picturesLibrary"/>
   </Capabilities>
 </Package>
