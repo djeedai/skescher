@@ -10,7 +10,7 @@
 
     <Grid>
         <InkCanvas x:Name="inkCanvas" />
-        <StackPanel x:Name="ToolPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Background="White">
+        <StackPanel x:Name="ToolPanel" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Background="White" Height="40">
             <InkToolbar x:Name="inkToolbar" VerticalAlignment="Top" TargetInkCanvas="{x:Bind inkCanvas}" HorizontalAlignment="Right">
                 <!--<InkToolbarCustomToolButton 
                 x:Name="customToolButton" 
